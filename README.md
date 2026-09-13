@@ -5,31 +5,46 @@ An autonomous multi-agent system that researches financial markets end-to-end �
 
 ---
 
-## Agent Architecture
+## System Architecture
 
 ```
-                        ResearchAgent (Orchestrator)
-                               |
-              ┌────────────────┼────────────────┐
-              ▼                ▼                ▼
-         NewsAgent       EarningsAgent     MarketAgent
-     (news + sentiment)  (financials)   (price + signals)
-              │                │                │
-              └────────────────┴────────────────┘
-                               │
-                         AgentMemory
-                    (persists notes across runs)
+  Stock Ticker
+       │
+       ▼
+┌─────────────────────────────────────┐
+│           ResearchAgent             │◀── AgentMemory
+│   Plan steps · Delegate · Reflect   │    (persists notes
+└────────────────┬────────────────────┘     across runs)
+                 │
+                 ▼
+    ┌────────────────────────┐
+    │   Routing Workflow     │  ← classifies content type
+    └──┬──────────┬──────────┘
+       │          │          │
+  ┌────▼───┐ ┌────▼────┐ ┌──▼────────┐
+  │  News  │ │Earnings │ │  Market   │
+  │ Agent  │ │  Agent  │ │  Agent    │
+  │NewsAPI │ │yfinance │ │ yfinance  │
+  └────┬───┘ └────┬────┘ └──┬────────┘
+       └──────────┴──────────┘
+                  │
+                  ▼
+    ┌─────────────────────────────┐
+    │    Prompt Chain Workflow    │
+    │ Ingest → Classify →        │
+    │   Extract → Summarize      │
+    └─────────────┬───────────────┘
+                  │
+                  ▼
+    ┌─────────────────────────────┐
+    │   Evaluator–Optimizer       │
+    │ Generate → Evaluate         │
+    │         → Refine (loop)    │
+    └─────────────┬───────────────┘
+                  │
+                  ▼
+          Research Report
 ```
-
----
-
-## Workflow Patterns
-
-| Pattern | Flow |
-|---|---|
-| **Prompt Chaining** | Ingest News → Preprocess → Classify → Extract → Summarize |
-| **Routing** | LLM classifier → EarningsAgent / NewsAgent / MarketAgent |
-| **Evaluator–Optimizer** | Generate analysis → Evaluate quality → Refine (loop) |
 
 ---
 

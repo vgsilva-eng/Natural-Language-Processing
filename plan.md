@@ -132,9 +132,9 @@ Everyone contributes to agents and the final notebook. Divide by agent/workflow 
 
 | Area | Files | Member |
 |---|---|---|
-| ResearchAgent + memory | `agents/research_agent.py`, `tools/memory_tool.py` | Viviana Garzon |
-| News + Market agents + tools | `agents/news_agent.py`, `agents/market_agent.py`, `tools/news_tool.py`, `tools/yfinance_tool.py` | Obinna Edeh |
-| Earnings agent + workflows | `agents/earnings_agent.py`, `workflows/` | Dina Othman |
+| ResearchAgent + memory | `agents/research_agent.py`, `tools/memory_tool.py` | TBD |
+| News + Market agents + tools | `agents/news_agent.py`, `agents/market_agent.py`, `tools/news_tool.py`, `tools/yfinance_tool.py` | TBD |
+| Earnings agent + workflows | `agents/earnings_agent.py`, `workflows/` | TBD |
 | **Notebook** | `notebooks/` | **All members together** |
 
 ---
