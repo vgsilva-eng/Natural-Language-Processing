@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAI-520 Final Project Plan</title>
+<style>
+  :root {
+    --blue: #1a56db;
+    --blue-light: #e8f0fe;
+    --green: #0d6832;
+    --green-light: #d4edda;
+    --orange: #c05621;
+    --orange-light: #fef3c7;
+    --red: #9b1c1c;
+    --red-light: #fde8e8;
+    --gray: #374151;
+    --gray-light: #f3f4f6;
+    --border: #e5e7eb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f9fafb;
+    color: var(--gray);
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  header {
+    background: linear-gradient(135deg, #1a56db 0%, #0d3280 100%);
+    color: white;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  header p { opacity: 0.85; font-size: 0.95rem; }
+
+  .badge-row { display: flex; gap: 0.75rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--border);
+    color: #111827;
+  }
+
+  /* Grade table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th { background: var(--gray-light); text-align: left; padding: 0.6rem 0.9rem; font-weight: 600; }
+  td { padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .pct { font-weight: 700; color: var(--blue); }
+
+  /* Timeline weeks */
+  .week {
+    border-left: 4px solid var(--blue);
+    padding: 1rem 1rem 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    border-radius: 0 8px 8px 0;
+    background: var(--gray-light);
+  }
+  .week.w1 { border-color: #7c3aed; background: #f5f3ff; }
+  .week.w2 { border-color: #1a56db; background: #eff6ff; }
+  .week.w3 { border-color: #0d6832; background: var(--green-light); }
+  .week.w4 { border-color: var(--orange); background: var(--orange-light); }
+  .week.w5 { border-color: var(--red); background: var(--red-light); }
+
+  .week-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+  .week-header h3 { font-size: 1rem; font-weight: 700; }
+  .week-date { font-size: 0.78rem; font-weight: 600; opacity: 0.7; }
+
+  .task-list { list-style: none; padding: 0; }
+  .task-list li {
+    padding: 0.3rem 0;
+    font-size: 0.88rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .task-list li::before { content: "☐"; opacity: 0.5; flex-shrink: 0; }
+
+  .deliverable {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    background: rgba(0,0,0,0.07);
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .deliverable::before { content: "Deliverable: "; opacity: 0.6; font-weight: 400; }
+
+  /* Ownership table */
+  .owner-row { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 0; }
+  .owner-row > div {
+    padding: 0.65rem 0.9rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.87rem;
+  }
+  .owner-row.header > div {
+    background: var(--gray-light);
+    font-weight: 600;
+    border-top: none;
+    border-radius: 0;
+  }
+  .owner-row:first-of-type.header > div:first-child { border-radius: 6px 0 0 0; }
+  .owner-row:first-of-type.header > div:last-child { border-radius: 0 6px 0 0; }
+
+  /* Git workflow */
+  .git-diagram {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    margin: 0.75rem 0;
+  }
+  .git-branch-main { color: #89dceb; }
+  .git-branch-dev { color: #a6e3a1; }
+  .git-branch-member { color: #f9e2af; }
+  .git-note { color: #6c7086; font-style: italic; }
+
+  code {
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-family: 'Fira Code', monospace;
+  }
+
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    margin: 0.75rem 0;
+    font-family: 'Fira Code', 'Courier New', monospace;
+  }
+
+  .env-key { color: #cba6f7; }
+  .env-val { color: #a6e3a1; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .tag {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .tag-blue { background: var(--blue-light); color: var(--blue); }
+  .tag-green { background: var(--green-light); color: var(--green); }
+  .tag-orange { background: var(--orange-light); color: var(--orange); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .note {
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    padding: 0.75rem 1rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Investment Research Agent</h1>
+    <p>AAI-520 Final Project — Team Plan</p>
+    <div class="badge-row">
+      <span class="badge">Due: Oct 16, 2026</span>
+      <span class="badge">2–3 Members</span>
+      <span class="badge">Agentic AI</span>
+    </div>
+  </header>
+
+  <!-- Grading -->
+  <div class="section">
+    <h2>Grading Breakdown</h2>
+    <table>
+      <tr><th>Component</th><th>Weight</th><th>What it covers</th></tr>
+      <tr>
+        <td>Agent Functions</td>
+        <td class="pct">33.8%</td>
+        <td>Plan steps, dynamic tools, self-reflection, cross-run memory</td>
+      </tr>
+      <tr>
+        <td>Workflow Patterns</td>
+        <td class="pct">33.8%</td>
+        <td>Prompt chaining, routing, evaluator-optimizer</td>
+      </tr>
+      <tr>
+        <td>Code</td>
+        <td class="pct">32.4%</td>
+        <td>PEP 8, notebook PDF/HTML, GitHub link, comments or supplemental report</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section">
+    <h2>Timeline</h2>
+
+    <div class="week w1">
+      <div class="week-header">
+        <h3>Week 1 — Setup &amp; Architecture</h3>
+        <span class="week-date">Sep 13–20</span>
+      </div>
+      <ul class="task-list">
+        <li>Create GitHub repo and push initial structure</li>
+        <li>Each member creates their personal branch</li>
+        <li>All members clone, set up <code>.venv</code>, confirm <code>pip install -r requirements.txt</code> works</li>
+        <li>Agree on LLM provider (Anthropic Claude recommended) and share API keys securely</li>
+        <li>Confirm data sources: yfinance + one news source</li>
+        <li>Sketch agent architecture and assign module ownership</li>
+      </ul>
+      <div class="deliverable">Repo live on GitHub; all members set up locally</div>
+    </div>
+
+    <div class="week w2">
+      <div class="week-header">
+        <h3>Week 2 — Agent Functions</h3>
+        <span class="week-date">Sep 21–27</span>
+      </div>
+      <ul class="task-list">
+        <li><strong>ResearchAgent</strong> — planning logic for any given ticker</li>
+        <li><strong>NewsAgent</strong> — fetch and classify news articles</li>
+        <li><strong>EarningsAgent</strong> — pull and parse financial statements</li>
+        <li><strong>MarketAgent</strong> — price history and basic technical signals</li>
+        <li><strong>AgentMemory</strong> — save/load notes between runs</li>
+        <li><strong>ResearchAgent.reflect()</strong> — self-critique of output quality</li>
+      </ul>
+      <div class="deliverable"><code>ResearchAgent.run("AAPL")</code> produces a structured report</div>
+    </div>
+
+    <div class="week w3">
+      <div class="week-header">
+        <h3>Week 3 — Workflow Patterns</h3>
+        <span class="week-date">Sep 28–Oct 4</span>
+      </div>
+      <ul class="task-list">
+        <li><strong>Prompt Chaining:</strong> Ingest News → Preprocess → Classify → Extract → Summarize</li>
+        <li><strong>Routing:</strong> LLM classifier routes content to EarningsAgent, NewsAgent, or MarketAgent</li>
+        <li><strong>Evaluator–Optimizer:</strong> Generate analysis → evaluate vs. criteria → refine (loop)</li>
+      </ul>
+      <div class="deliverable">Each workflow runnable independently with a demo input</div>
+    </div>
+
+    <div class="week w4">
+      <div class="week-header">
+        <h3>Week 4 — Integration &amp; Testing</h3>
+        <span class="week-date">Oct 5–11</span>
+      </div>
+      <ul class="task-list">
+        <li>Wire all workflows into <code>ResearchAgent.run()</code></li>
+        <li>Run end-to-end for 2–3 tickers (e.g., AAPL, NVDA, TSLA)</li>
+        <li>Add notebook markdown cells for Agent Design, Functions, Evaluation</li>
+        <li>Team code review — PEP 8 pass on all files</li>
+        <li>Confirm GitHub link is in the notebook</li>
+        <li>(Optional) write Supplemental Report</li>
+      </ul>
+      <div class="deliverable">Notebook runs clean top-to-bottom; all members have commit history</div>
+    </div>
+
+    <div class="week w5">
+      <div class="week-header">
+        <h3>Week 5 — Polish &amp; Submit</h3>
+        <span class="week-date">Oct 12–16</span>
+      </div>
+      <ul class="task-list">
+        <li>Export notebook as PDF (preferred) or HTML</li>
+        <li>Final README review</li>
+        <li>One team member submits to Canvas</li>
+        <li>Each member submits Peer Evaluation individually</li>
+      </ul>
+      <div class="deliverable">Submitted to Canvas by Oct 16</div>
+    </div>
+  </div>
+
+  <!-- Git Workflow -->
+  <div class="section">
+    <h2>Git Workflow</h2>
+    <div class="git-diagram">
+      <span class="git-branch-main">main</span>          <span class="git-note">← protected, merge via PR only</span><br>
+      &nbsp;└── <span class="git-branch-dev">develop</span>    <span class="git-note">← integration branch</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="git-branch-member">[member1-name]</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="git-branch-member">[member2-name]</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="git-branch-member">[member3-name]</span>
+    </div>
+
+    <p style="margin: 0.75rem 0 0.4rem; font-weight: 600; font-size: 0.9rem;">First-time setup (each member runs this)</p>
+    <pre>git clone &lt;repo-url&gt;
+cd Finalproject
+git checkout -b your-name
+git push -u origin your-name</pre>
+
+    <p style="margin: 0.75rem 0 0.4rem; font-weight: 600; font-size: 0.9rem;">Daily workflow</p>
+    <pre>git pull origin your-name
+# ... do work ...
+git add agents/research_agent.py      # stage specific files only
+git commit -m "feat: add planning logic"
+git push origin your-name</pre>
+
+    <div class="note">
+      Open a Pull Request on GitHub from <code>your-name</code> → <code>develop</code> when a piece is ready for team review. Never push directly to <code>main</code>.
+    </div>
+  </div>
+
+  <!-- Ownership -->
+  <div class="section">
+    <h2>Suggested Ownership Split</h2>
+    <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+      <div class="owner-row header">
+        <div>Area</div><div>Files</div><div>Owner</div>
+      </div>
+      <div class="owner-row">
+        <div>Core agent &amp; memory</div>
+        <div><code>agents/research_agent.py</code><br><code>tools/memory_tool.py</code></div>
+        <div>Member 1</div>
+      </div>
+      <div class="owner-row">
+        <div>Specialist agents &amp; tools</div>
+        <div><code>agents/news_agent.py</code><br><code>agents/earnings_agent.py</code><br><code>agents/market_agent.py</code><br><code>tools/yfinance_tool.py</code></div>
+        <div>Member 2</div>
+      </div>
+      <div class="owner-row">
+        <div>Workflows &amp; notebook</div>
+        <div><code>workflows/</code><br><code>notebooks/</code></div>
+        <div>Member 3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="two-col">
+    <div class="section">
+      <h2>Tech Stack</h2>
+      <table>
+        <tr><th>Layer</th><th>Tool</th></tr>
+        <tr><td>LLM</td><td>Anthropic Claude</td></tr>
+        <tr><td>Agent framework</td><td>LangGraph / Anthropic SDK</td></tr>
+        <tr><td>Observability</td><td>LangSmith</td></tr>
+        <tr><td>Financial data</td><td>yfinance, Alpha Vantage</td></tr>
+        <tr><td>News</td><td>NewsAPI.org / yfinance</td></tr>
+        <tr><td>Environment</td><td>Python 3.11+, .venv</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>API Keys (.env — never commit)</h2>
+      <pre><span class="env-key">ANTHROPIC_API_KEY</span>=<span class="env-val">sk-ant-...</span>
+<span class="env-key">NEWSAPI_KEY</span>=<span class="env-val">...</span>
+<span class="env-key">ALPHA_VANTAGE_KEY</span>=<span class="env-val">...</span>
+<span class="env-key">FRED_API_KEY</span>=<span class="env-val">...</span>
+<span class="env-key">LANGCHAIN_API_KEY</span>=<span class="env-val">...</span>
+<span class="env-key">LANGCHAIN_TRACING_V2</span>=<span class="env-val">true</span></pre>
+    </div>
+  </div>
+
+  <!-- Auto-activate -->
+  <div class="section">
+    <h2>Auto-Activate .venv on cd (one-time setup)</h2>
+    <p style="font-size:0.9rem; margin-bottom: 0.75rem;">Install direnv so the virtual environment activates automatically every time you <code>cd</code> into the project:</p>
+    <pre>brew install direnv
+echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
+source ~/.zshrc
+cd /path/to/Finalproject
+direnv allow .</pre>
+    <div class="note">After this, the <code>.venv</code> activates silently on every <code>cd</code> — no manual <code>source .venv/bin/activate</code> needed.</div>
+  </div>
+
+</div>
+</body>
+</html>

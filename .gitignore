@@ -1,0 +1,45 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Private / local-only files
+private/
+CLAUDE.md
+
+# Data files (too large for git)
+data/
+*.csv
+*.json.gz
+*.parquet
+*.pkl
+
+# Environment variables (API keys)
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_meta
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Outputs
+outputs/
+results/
+*.log
