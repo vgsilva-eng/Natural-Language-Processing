@@ -2,7 +2,6 @@
 
 **Project:** Autonomous Investment Research Agent
 **Due:** October 16, 2026
-**Team size:** 2–3 members
 
 ---
 
@@ -28,7 +27,7 @@
 - [ ] Agree on LLM provider (Anthropic Claude recommended) and API keys
 - [ ] Confirm data sources: yfinance + one news source
 - [ ] Sketch the agent architecture (which agent does what)
-- [ ] Assign ownership: who owns agents, who owns workflows, who owns notebook
+- [ ] Assign who builds which agent/workflow (everyone contributes to agents and notebook)
 
 **Deliverable:** Repo live on GitHub with README, team all set up locally.
 
@@ -127,13 +126,16 @@ git push origin your-name
 
 ---
 
-## Ownership Split 
+## Team Split
 
-| Area | Files | Owner |
+Everyone contributes to agents and the final notebook. Divide by agent/workflow to avoid conflicts:
+
+| Area | Files | Member |
 |---|---|---|
-| Core agent + memory | `agents/research_agent.py`, `tools/memory_tool.py` | Member 1 |
-| Specialist agents + tools | `agents/news_agent.py`, `agents/earnings_agent.py`, `agents/market_agent.py`, `tools/` | Member 2 |
-| Workflow patterns + notebook | `workflows/`, `notebooks/` | Member 3 |
+| ResearchAgent + memory | `agents/research_agent.py`, `tools/memory_tool.py` | Viviana Garzon |
+| News + Market agents + tools | `agents/news_agent.py`, `agents/market_agent.py`, `tools/news_tool.py`, `tools/yfinance_tool.py` | Obinna Edeh |
+| Earnings agent + workflows | `agents/earnings_agent.py`, `workflows/` | Dina Othman |
+| **Notebook** | `notebooks/` | **All members together** |
 
 ---
 

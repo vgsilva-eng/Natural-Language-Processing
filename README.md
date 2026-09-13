@@ -1,45 +1,45 @@
-# AAI-520 Final Project — Investment Research Agent
+# Investment Research Agent
+### AAI-520 · Agentic AI Systems · University of San Diego
 
-**Due: October 16, 2026** | USD Applied Artificial Intelligence Program
-
-An agentic AI system that autonomously researches financial markets using multi-agent coordination and three core workflow patterns.
+An autonomous multi-agent system that researches financial markets end-to-end — planning research steps, routing content to specialist agents, self-reflecting on output quality, and retaining memory across runs.
 
 ---
 
-## Team Setup (first time only)
+## Agent Architecture
 
-### 1. Clone the repo
-```bash
-git clone <repo-url>
-cd Finalproject
+```
+                        ResearchAgent (Orchestrator)
+                               |
+              ┌────────────────┼────────────────┐
+              ▼                ▼                ▼
+         NewsAgent       EarningsAgent     MarketAgent
+     (news + sentiment)  (financials)   (price + signals)
+              │                │                │
+              └────────────────┴────────────────┘
+                               │
+                         AgentMemory
+                    (persists notes across runs)
 ```
 
-### 2. Create your personal branch
-```bash
-git checkout -b your-name
-git push -u origin your-name
-```
-**Never commit directly to `main`.** Open a Pull Request when your work is ready.
+---
 
-### 3. Set up your environment
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env    # then fill in your API keys
-```
+## Workflow Patterns
 
-### 4. Auto-activate .venv on `cd` (one-time setup)
+| Pattern | Flow |
+|---|---|
+| **Prompt Chaining** | Ingest News → Preprocess → Classify → Extract → Summarize |
+| **Routing** | LLM classifier → EarningsAgent / NewsAgent / MarketAgent |
+| **Evaluator–Optimizer** | Generate analysis → Evaluate quality → Refine (loop) |
 
-Install direnv:
-```bash
-brew install direnv
-echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
-source ~/.zshrc
-direnv allow .
-```
+---
 
-After this, every time you `cd` into the project folder the `.venv` activates automatically.
+## Grading Breakdown
+
+| Component | Weight |
+|---|---|
+| Agent Functions | 33.8% |
+| Workflow Patterns | 33.8% |
+| Code | 32.4% |
 
 ---
 
@@ -47,61 +47,66 @@ After this, every time you `cd` into the project folder the `.venv` activates au
 
 ```
 Finalproject/
-├── agents/              # Autonomous LLM agent modules
-│   ├── research_agent.py     # Main orchestrator
-│   ├── news_agent.py         # News specialist
-│   ├── earnings_agent.py     # Earnings specialist
-│   └── market_agent.py       # Market data specialist
-├── workflows/           # Three required workflow patterns
-│   ├── prompt_chaining.py    # Ingest→Preprocess→Classify→Extract→Summarize
-│   ├── routing.py            # Route to the right specialist
-│   └── evaluator_optimizer.py # Generate→Evaluate→Refine
-├── tools/               # External API integrations
+├── agents/
+│   ├── research_agent.py      # Orchestrator — planning, reflection, memory
+│   ├── news_agent.py          # News ingestion and sentiment
+│   ├── earnings_agent.py      # Financial statements analysis
+│   └── market_agent.py        # Price history and technical signals
+├── workflows/
+│   ├── prompt_chaining.py
+│   ├── routing.py
+│   └── evaluator_optimizer.py
+├── tools/
 │   ├── yfinance_tool.py
 │   ├── news_tool.py
 │   └── memory_tool.py
-├── notebooks/           # Final deliverable notebook
-├── tests/               # Unit tests
-├── data/                # Local datasets (gitignored)
-├── private/             # Local-only reference files (gitignored)
-├── .env                 # API keys — NEVER commit this
-├── requirements.txt
-├── plan.md              # Team project plan
-└── CLAUDE.md            # AI assistant rules for this repo
+├── notebooks/                 # Final deliverable
+├── tests/
+├── .env.example               # API key template
+└── requirements.txt
 ```
 
 ---
 
-## Grading Breakdown
+## Data Sources
 
-| Component | Weight | Key Requirement |
-|---|---|---|
-| Agent Functions | 33.8% | Plan, tools, self-reflect, memory |
-| Workflow Patterns | 33.8% | Prompt chaining, routing, evaluator-optimizer |
-| Code | 32.4% | PEP 8, notebook as PDF/HTML, GitHub link included |
-
----
-
-## Git Workflow
-
-```
-main
- └── develop          (integration branch)
-      ├── member1     (personal work branch)
-      ├── member2
-      └── member3
-```
-
-1. Work on your personal branch.
-2. Open a PR into `develop` when a piece is done.
-3. After team review, merge `develop` → `main` before submission.
+| Source | Use |
+|---|---|
+| `yfinance` | Stock prices, financials |
+| NewsAPI.org | Financial news headlines |
+| FRED API | Economic indicators |
+| SEC EDGAR | Company filings |
+| Alpha Vantage | Alternative price and news data |
 
 ---
 
-## APIs / Data Sources
+## Setup
 
-- `yfinance` — stock prices, financials
-- NewsAPI.org — financial news headlines
-- FRED API — economic data (free)
-- SEC EDGAR — company filings
-- Alpha Vantage — alternative price/news data (free tier)
+```bash
+git clone https://github.com/vgsilva-eng/Natural-Language-Processing.git
+cd Natural-Language-Processing
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env   # add your API keys
+```
+
+---
+
+## Dependencies
+
+```
+anthropic
+langchain / langgraph
+yfinance
+pandas · numpy
+python-dotenv
+jupyter
+```
+
+---
+
+## Team
+
+- Viviana Garzon
+- Obinna Edeh
+- Dina Othman
