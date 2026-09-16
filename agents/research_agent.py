@@ -31,10 +31,7 @@ class ResearchAgent:
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         self.memory = AgentMemory()
 
-    # ------------------------------------------------------------------
     # 1. PLAN
-    # ------------------------------------------------------------------
-
     def plan(self, ticker: str) -> list[str]:
         """Ask the LLM to break down research into ordered steps."""
         past = self.memory.load().get(ticker, {})
@@ -61,10 +58,7 @@ class ResearchAgent:
             steps = [line.strip("- ").strip() for line in raw.splitlines() if line.strip()]
         return steps
 
-    # ------------------------------------------------------------------
     # 2. RUN
-    # ------------------------------------------------------------------
-
     def run(self, ticker: str) -> dict:
         """Execute the full research pipeline and return a structured report."""
         print(f"[ResearchAgent] Planning research for {ticker}...")
@@ -128,10 +122,7 @@ class ResearchAgent:
         )
         return response.content[0].text.strip()
 
-    # ------------------------------------------------------------------
     # 3. REFLECT
-    # ------------------------------------------------------------------
-
     def reflect(self, report: dict) -> str:
         """Self-assess the quality of the generated report."""
         response = self.client.messages.create(
