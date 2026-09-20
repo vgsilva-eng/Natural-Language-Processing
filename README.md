@@ -125,3 +125,32 @@ jupyter
 - Viviana Garzon
 - Obinna Edeh
 - Dina Othman
+
+---
+
+## MarketAgent contribution (Obinna)
+
+`MarketAgent.analyze(ticker, period="3mo")` fetches Yahoo Finance price
+history and returns a dated market snapshot, observed price trend, moving
+averages, recent volume comparison, and a plain-language summary. Missing
+200-session or 50-session averages remain `None` when the requested period is
+too short; the agent does not infer them from a shorter sample. These signals
+describe past prices and are not investment recommendations.
+
+Run the demonstration in
+[`notebooks/market_agent_demo.ipynb`](notebooks/market_agent_demo.ipynb) after
+installing `requirements.txt`. It uses `AAPL` as an editable example and
+creates an SVG chart from the same price history. MarketAgent needs no LLM API
+key. A network connection is needed for live Yahoo Finance data.
+
+To check the MarketAgent and Yahoo Finance adapter without network access,
+run from the repository root:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The tests use fixed data and cover short histories, missing provider metadata,
+invalid tickers, chart creation, and routing into MarketAgent. The full
+ResearchAgent run still depends on integration with the other specialists and
+the configured LLM client.
