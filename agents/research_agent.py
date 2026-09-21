@@ -31,6 +31,18 @@ class ResearchAgent:
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         self.memory = AgentMemory()
 
+    @staticmethod
+    def _response_text(response) -> str:
+        """Return text blocks from a response that may also contain thinking blocks."""
+        text="\n".join(
+            block.text
+            for block in response.content
+            if getattr(block, "type", None) == "text"
+        ).strip()
+        if not text:
+            raise ValueError("No text blocks found in response.")
+        return text
+    
     # 1. PLAN
     def plan(self, ticker: str) -> list[str]:
         """Ask the LLM to break down research into ordered steps."""
@@ -51,11 +63,16 @@ class ResearchAgent:
                 }
             ],
         )
-        raw = response.content[0].text.strip()
+
+        raw = self._response_text(response)
+
+        start, end = raw.find("["), raw.rfind("]") + 1
+        if start != -1 and end != -1:
+            raw = raw[start:end]
         try:
             steps = json.loads(raw)
         except json.JSONDecodeError:
-            steps = [line.strip("- ").strip() for line in raw.splitlines() if line.strip()]
+            steps = [line.strip("-\" ").strip() for line in raw.splitlines() if line.strip()]
         return steps
 
     # 2. RUN
