@@ -154,3 +154,16 @@ The tests use fixed data and cover short histories, missing provider metadata,
 invalid tickers, chart creation, and routing into MarketAgent. The full
 ResearchAgent run still depends on integration with the other specialists and
 the configured LLM client.
+
+
+## NewsAgent and EarningsAgent contribution (Dina)
+
+`NewsAgent` retrieves recent financial news, classifies articles into financial topics, and summarizes the main themes using Claude. `EarningsAgent` retrieves company financial data from Yahoo Finance and returns key metrics such as revenue, net income, EPS, valuation ratios, and net profit margin, along with simple profitability signals.
+
+Run the analysis in `notebooks/news_earnings_agent_demo.ipynb` after installing `requirements.txt`. The notebook uses `AAPL` as an editable example and demonstrates both agents individually before combining their outputs. NewsAgent requires configured Anthropic and NewsAPI keys in the local `.env` file, while EarningsAgent uses live Yahoo Finance data.
+
+To run the automated tests from the repository root:
+
+pytest
+
+The tests use mocked data and API responses, so they do not require live API calls. They cover financial analysis, missing financial values, news classification, empty news results, and empty-summary handling. The NewsAgent and EarningsAgent outputs are designed to be integrated with the MarketAgent and the project's routing and research workflows.
