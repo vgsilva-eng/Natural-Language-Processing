@@ -101,6 +101,8 @@ Focus on:
 
 Use only the information provided in the articles.
 Keep the summary concise and factual.
+Limit the summary to 4-6 bullet points total.
+Prioritize the most relevant financial information and avoid unnecessary detail.
 
 Articles:
 {article_text}
@@ -108,7 +110,7 @@ Articles:
 
         response = client.messages.create(
             model=self.model,
-            max_tokens=600,
+            max_tokens=1000,
             messages=[
                 {"role": "user", "content": prompt}
             ],
