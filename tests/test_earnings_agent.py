@@ -74,3 +74,38 @@ def test_earnings_agent_missing_values(monkeypatch):
     assert result["ticker"] == "TEST"
     assert result["net_margin_pct"] is None
     assert result["signals"] == []
+
+
+def test_router_dispatches_to_earnings_agent(monkeypatch):
+    """Test that the router dispatches an earnings request to EarningsAgent."""
+
+    from workflows import routing
+
+    mock_result = {
+        "ticker": "AAPL",
+        "revenue": 1000.0,
+        "net_income": 200.0,
+        "net_margin_pct": 20.0,
+        "signals": ["The company reported positive net income."],
+    }
+
+    monkeypatch.setattr(
+        routing,
+        "classify_route",
+        lambda content, client: "earnings",
+    )
+
+    monkeypatch.setattr(
+        EarningsAgent,
+        "analyze",
+        lambda self, ticker: mock_result,
+    )
+
+    result = routing.route_to_specialist(
+        "How are Apple's earnings?",
+        ticker="AAPL",
+    )
+
+    assert result["route"] == "earnings"
+    assert result["ticker"] == "AAPL"
+    assert result["result"] == mock_result
