@@ -89,9 +89,27 @@ Finalproject/
 |---|---|
 | `yfinance` | Stock prices, financials |
 | NewsAPI.org | Financial news headlines |
-| FRED API | Economic indicators |
-| SEC EDGAR | Company filings |
-| Alpha Vantage | Alternative price and news data |
+
+---
+
+## Agents
+
+| Agent | Description |
+|---|---|
+| `ResearchAgent` | Orchestrator — plans research steps, fetches data, synthesizes a 3-paragraph investment report, and self-reflects on output quality |
+| `MarketAgent` | Analyzes price trends, moving averages, and volume from Yahoo Finance — no LLM required |
+| `NewsAgent` | Fetches recent news articles, classifies each by financial topic, and summarizes key themes using Claude |
+| `EarningsAgent` | Pulls financial statements from Yahoo Finance and computes revenue, net income, margins, and valuation ratios |
+
+---
+
+## Workflow Patterns
+
+| Workflow | Description |
+|---|---|
+| `Prompt Chaining` | 5-step news pipeline: ingest → preprocess → classify → extract facts → summarize |
+| `Routing` | LLM classifier reads content and dispatches it to the correct specialist agent |
+| `Evaluator-Optimizer` | Scores a draft, gives feedback, rewrites it — loops until quality passes a threshold |
 
 ---
 
@@ -100,9 +118,16 @@ Finalproject/
 ```bash
 git clone https://github.com/vgsilva-eng/Natural-Language-Processing.git
 cd Natural-Language-Processing
+git checkout VivianaS
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # add your API keys
+cp .env.example .env   # add your ANTHROPIC_API_KEY and NEWSAPI_KEY
+```
+
+Then open and run the notebook top-to-bottom with VPN disconnected:
+
+```bash
+jupyter notebook notebooks/investment_research_agent.ipynb
 ```
 
 ---
@@ -111,9 +136,8 @@ cp .env.example .env   # add your API keys
 
 ```
 anthropic
-langchain / langgraph
 yfinance
-pandas · numpy
+pandas
 python-dotenv
 jupyter
 ```
@@ -128,42 +152,10 @@ jupyter
 
 ---
 
-## MarketAgent contribution (Obinna)
-
-`MarketAgent.analyze(ticker, period="3mo")` fetches Yahoo Finance price
-history and returns a dated market snapshot, observed price trend, moving
-averages, recent volume comparison, and a plain-language summary. Missing
-200-session or 50-session averages remain `None` when the requested period is
-too short; the agent does not infer them from a shorter sample. These signals
-describe past prices and are not investment recommendations.
-
-Run the demonstration in
-[`notebooks/market_agent_demo.ipynb`](notebooks/market_agent_demo.ipynb) after
-installing `requirements.txt`. It uses `AAPL` as an editable example and
-creates an SVG chart from the same price history. MarketAgent needs no LLM API
-key. A network connection is needed for live Yahoo Finance data.
-
-To check the MarketAgent and Yahoo Finance adapter without network access,
-run from the repository root:
+## Running the Tests
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-The tests use fixed data and cover short histories, missing provider metadata,
-invalid tickers, chart creation, and routing into MarketAgent. The full
-ResearchAgent run still depends on integration with the other specialists and
-the configured LLM client.
-
-
-## NewsAgent and EarningsAgent contribution (Dina)
-
-`NewsAgent` retrieves recent financial news, classifies articles into financial topics, and summarizes the main themes using Claude. `EarningsAgent` retrieves company financial data from Yahoo Finance and returns key metrics such as revenue, net income, EPS, valuation ratios, and net profit margin, along with simple profitability signals.
-
-Run the analysis in `notebooks/news_earnings_agent_demo.ipynb` after installing `requirements.txt`. The notebook uses `AAPL` as an editable example and demonstrates both agents individually before combining their outputs. NewsAgent requires configured Anthropic and NewsAPI keys in the local `.env` file, while EarningsAgent uses live Yahoo Finance data.
-
-To run the automated tests from the repository root:
-
-pytest
-
-The tests use mocked data and API responses, so they do not require live API calls. They cover financial analysis, missing financial values, news classification, empty news results, and empty-summary handling. The NewsAgent and EarningsAgent outputs are designed to be integrated with the MarketAgent and the project's routing and research workflows.
+Tests use fixed data and cover price history, missing metadata, invalid tickers, chart creation, news classification, and routing.
