@@ -28,14 +28,22 @@ def run_prompt_chain(ticker: str, lookback_days: int = 7) -> dict:
       4. Extract  — pull key facts from classified articles
       5. Summarize — write a final news summary
     """
-    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
     # STEP 1 — INGEST
 
     print(f"[Chain] Step 1: Ingesting news for {ticker}...")
     articles = fetch_news(ticker, lookback_days=lookback_days)
     if not articles:
-        return {"ticker": ticker, "error": "No news articles found."}
+        return {
+            "ticker": ticker,
+            "articles_ingested": 0,
+            "articles_after_dedup": 0,
+            "classified": [],
+            "key_facts": [],
+            "summary": "No recent news articles were found.",
+            "error": "No news articles found.",
+        }
+
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     
     # STEP 2 — PREPROCESS
