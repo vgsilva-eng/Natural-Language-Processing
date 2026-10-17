@@ -8,6 +8,7 @@ import anthropic
 from dotenv import load_dotenv
 
 from tools.news_tool import fetch_news
+from tools.anthropic_tool import response_text
 
 
 class NewsAgent:
@@ -50,12 +51,13 @@ Return only the category name.
             response = client.messages.create(
                 model=self.model,
                 max_tokens=20,
+                thinking={"type": "disabled"},
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
             )
 
-            category = response.content[0].text.strip().lower()
+            category = response_text(response).lower()
 
             if category not in {
                 "earnings",
@@ -111,15 +113,10 @@ Articles:
         response = client.messages.create(
             model=self.model,
             max_tokens=1000,
+            thinking={"type": "disabled"},
             messages=[
                 {"role": "user", "content": prompt}
             ],
         )
 
-        text_parts = [
-            block.text
-            for block in response.content
-            if getattr(block, "type", None) == "text"
-        ]
-
-        return "\n".join(text_parts).strip()
+        return response_text(response)

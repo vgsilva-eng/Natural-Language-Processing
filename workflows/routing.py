@@ -11,6 +11,7 @@ import json
 
 import anthropic
 from dotenv import load_dotenv
+from tools.anthropic_tool import response_text
 
 load_dotenv()
 
@@ -33,9 +34,10 @@ def classify_route(content: str, client: anthropic.Anthropic) -> str:
     resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=16,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
-    route = resp.content[0].text.strip().lower()
+    route = response_text(resp).lower()
     return route if route in VALID_ROUTES else "news"
 
 

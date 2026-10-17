@@ -17,8 +17,10 @@ import anthropic
 from dotenv import load_dotenv
 
 from tools.memory_tool import AgentMemory
-from tools.news_tool import fetch_news
-from tools.yfinance_tool import get_financials, get_stock_data
+from tools.anthropic_tool import response_text
+from agents.earnings_agent import EarningsAgent
+from agents.market_agent import MarketAgent
+from agents.news_agent import NewsAgent
 
 load_dotenv()
 
@@ -34,14 +36,7 @@ class ResearchAgent:
     @staticmethod
     def _response_text(response) -> str:
         """Return text blocks from a response that may also contain thinking blocks."""
-        text="\n".join(
-            block.text
-            for block in response.content
-            if getattr(block, "type", None) == "text"
-        ).strip()
-        if not text:
-            raise ValueError("No text blocks found in response.")
-        return text
+        return response_text(response)
     
     # 1. PLAN
     def plan(self, ticker: str) -> list[str]:
@@ -52,6 +47,7 @@ class ResearchAgent:
         response = self.client.messages.create(
             model=self.model,
             max_tokens=512,
+            thinking={"type": "disabled"},
             messages=[
                 {
                     "role": "user",
@@ -82,13 +78,17 @@ class ResearchAgent:
         steps = self.plan(ticker)
         print(f"[ResearchAgent] Steps: {steps}")
 
-        print(f"[ResearchAgent] Fetching market data...")
-        market = get_stock_data(ticker)
-        financials = get_financials(ticker)
+        print(f"[ResearchAgent] Running MarketAgent...")
+        market = MarketAgent().analyze(ticker)
 
-        print(f"[ResearchAgent] Fetching news...")
-        news = fetch_news(ticker)
+        print(f"[ResearchAgent] Running EarningsAgent...")
+        financials = EarningsAgent().analyze(ticker)
+
+        print(f"[ResearchAgent] Running NewsAgent...")
+        news_agent = NewsAgent()
+        news = news_agent.fetch_and_classify(ticker)
         headlines = [a["title"] for a in news[:10] if a.get("title")]
+        news_summary = news_agent.summarize(news)
 
         print(f"[ResearchAgent] Synthesizing report...")
         report_text = self._synthesize(ticker, steps, market, financials, headlines)
@@ -109,6 +109,11 @@ class ResearchAgent:
                 "sector": financials["sector"],
             },
             "top_headlines": headlines,
+            "specialist_outputs": {
+                "market": market,
+                "earnings": financials,
+                "news": {"articles": news, "summary": news_summary},
+            },
             "analysis": report_text,
         }
 
@@ -135,9 +140,10 @@ class ResearchAgent:
         response = self.client.messages.create(
             model=self.model,
             max_tokens=1024,
+            thinking={"type": "disabled"},
             messages=[{"role": "user", "content": prompt}],
         )
-        return response.content[0].text.strip()
+        return self._response_text(response)
 
     # 3. REFLECT
     def reflect(self, report: dict) -> str:
@@ -145,6 +151,7 @@ class ResearchAgent:
         response = self.client.messages.create(
             model=self.model,
             max_tokens=512,
+            thinking={"type": "disabled"},
             messages=[
                 {
                     "role": "user",
@@ -157,4 +164,4 @@ class ResearchAgent:
                 }
             ],
         )
-        return response.content[0].text.strip()
+        return self._response_text(response)
