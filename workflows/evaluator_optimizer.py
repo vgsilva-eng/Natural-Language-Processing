@@ -11,6 +11,7 @@ import json
 
 import anthropic
 from dotenv import load_dotenv
+from tools.anthropic_tool import response_text
 
 load_dotenv()
 
@@ -35,12 +36,13 @@ def _evaluate(draft: str, criteria: list[str], client: anthropic.Anthropic) -> d
     resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=512,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
     try:
-        return json.loads(resp.content[0].text.strip())
+        return json.loads(response_text(resp))
     except json.JSONDecodeError:
-        return {"score": 5, "feedback": resp.content[0].text.strip()}
+        return {"score": 5, "feedback": response_text(resp)}
 
 
 def _optimize(draft: str, feedback: str, client: anthropic.Anthropic) -> str:
@@ -55,9 +57,10 @@ def _optimize(draft: str, feedback: str, client: anthropic.Anthropic) -> str:
     resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=1024,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
-    return resp.content[0].text.strip()
+    return response_text(resp)
 
 
 def run_evaluator_optimizer(

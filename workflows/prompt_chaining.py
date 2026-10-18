@@ -13,6 +13,7 @@ import anthropic
 from dotenv import load_dotenv
 
 from tools.news_tool import fetch_news
+from tools.anthropic_tool import response_text
 
 load_dotenv()
 
@@ -81,10 +82,11 @@ def run_prompt_chain(ticker: str, lookback_days: int = 7) -> dict:
     classify_resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=1024,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": classify_prompt}],
     )
     try:
-        classified = json.loads(classify_resp.content[0].text.strip())
+        classified = json.loads(response_text(classify_resp))
     except json.JSONDecodeError:
         classified = [{"index": i+1, "category": "other", "title": a["title"]}
                       for i, a in enumerate(clean)]
@@ -102,12 +104,13 @@ def run_prompt_chain(ticker: str, lookback_days: int = 7) -> dict:
     extract_resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=512,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": extract_prompt}],
     )
     try:
-        key_facts = json.loads(extract_resp.content[0].text.strip())
+        key_facts = json.loads(response_text(extract_resp))
     except json.JSONDecodeError:
-        key_facts = [extract_resp.content[0].text.strip()]
+        key_facts = [response_text(extract_resp)]
 
     
     # STEP 5 — SUMMARIZE
@@ -120,9 +123,10 @@ def run_prompt_chain(ticker: str, lookback_days: int = 7) -> dict:
     summarize_resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=512,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": summarize_prompt}],
     )
-    summary = summarize_resp.content[0].text.strip()
+    summary = response_text(summarize_resp)
 
     return {
         "ticker": ticker,
