@@ -77,36 +77,48 @@ class ResearchAgent:
         print(f"[ResearchAgent] Planning research for {ticker}...")
         steps = self.plan(ticker)
         print(f"[ResearchAgent] Steps: {steps}")
+        selected = self._select_specialists(steps)
+        print(f"[ResearchAgent] Selected specialists: {selected}")
 
-        print(f"[ResearchAgent] Running MarketAgent...")
-        market = MarketAgent().analyze(ticker)
+        market = {}
+        if "market" in selected:
+            print(f"[ResearchAgent] Running MarketAgent...")
+            market = MarketAgent().analyze(ticker)
 
-        print(f"[ResearchAgent] Running EarningsAgent...")
-        financials = EarningsAgent().analyze(ticker)
+        financials = {}
+        if "earnings" in selected:
+            print(f"[ResearchAgent] Running EarningsAgent...")
+            financials = EarningsAgent().analyze(ticker)
 
-        print(f"[ResearchAgent] Running NewsAgent...")
-        news_agent = NewsAgent()
-        news = news_agent.fetch_and_classify(ticker)
+        news = []
+        news_summary = "News analysis was not selected by the research plan."
+        if "news" in selected:
+            print(f"[ResearchAgent] Running NewsAgent...")
+            news_agent = NewsAgent()
+            news = news_agent.fetch_and_classify(ticker)
+            news_summary = news_agent.summarize(news)
         headlines = [a["title"] for a in news[:10] if a.get("title")]
-        news_summary = news_agent.summarize(news)
 
         print(f"[ResearchAgent] Synthesizing report...")
-        report_text = self._synthesize(ticker, steps, market, financials, headlines)
+        report_text = self._synthesize(
+            ticker, steps, market, financials, headlines, news_summary
+        )
 
         report = {
             "ticker": ticker,
             "steps": steps,
+            "selected_specialists": selected,
             "market_snapshot": {
-                "price": market["current_price"],
-                "change_pct": market["change_pct"],
-                "week_52_high": market["week_52_high"],
-                "week_52_low": market["week_52_low"],
+                "price": market.get("current_price"),
+                "change_pct": market.get("change_pct"),
+                "week_52_high": market.get("week_52_high"),
+                "week_52_low": market.get("week_52_low"),
             },
             "financials_snapshot": {
-                "revenue": financials["revenue"],
-                "net_income": financials["net_income"],
-                "pe_ratio": financials["pe_ratio"],
-                "sector": financials["sector"],
+                "revenue": financials.get("revenue"),
+                "net_income": financials.get("net_income"),
+                "pe_ratio": financials.get("pe_ratio"),
+                "sector": financials.get("sector"),
             },
             "top_headlines": headlines,
             "specialist_outputs": {
@@ -117,10 +129,37 @@ class ResearchAgent:
             "analysis": report_text,
         }
 
-        self.memory.save(ticker, {"last_price": market["current_price"], "summary": report_text[:300]})
+        print(f"[ResearchAgent] Reflecting and refining report...")
+        reflection = self.reflect(report)
+        report["initial_analysis"] = report_text
+        report["reflection"] = reflection
+        report["analysis"] = self._refine(report_text, reflection)
+
+        self.memory.save(
+            ticker,
+            {"last_price": market.get("current_price"), "summary": report["analysis"][:300]},
+        )
         return report
 
-    def _synthesize(self, ticker, steps, market, financials, headlines) -> str:
+    @staticmethod
+    def _select_specialists(steps: list[str]) -> list[str]:
+        """Select specialists whose subject matter appears in the research plan."""
+        plan = " ".join(str(step) for step in steps).lower()
+        keywords = {
+            "market": ("market", "price", "technical", "volume", "valuation"),
+            "earnings": ("earnings", "financial", "revenue", "profit", "fundamental"),
+            "news": ("news", "headline", "sentiment", "event", "development"),
+        }
+        selected = [
+            specialist
+            for specialist, terms in keywords.items()
+            if any(term in plan for term in terms)
+        ]
+        return selected or list(keywords)
+
+    def _synthesize(
+        self, ticker, steps, market, financials, headlines, news_summary
+    ) -> str:
         prompt = (
             f"You are an investment research analyst. Write a concise research summary for {ticker}.\n\n"
             f"Research steps followed: {steps}\n\n"
@@ -134,6 +173,7 @@ class ResearchAgent:
             f"  P/E ratio: {financials.get('pe_ratio')}\n"
             f"  Sector: {financials.get('sector')}\n\n"
             f"Recent headlines:\n" + "\n".join(f"  - {h}" for h in headlines) + "\n\n"
+            f"NewsAgent summary:\n{news_summary}\n\n"
             f"Write a 3-paragraph investment research summary covering: "
             f"(1) market position and price action, (2) financial health, (3) news sentiment and outlook."
         )
@@ -142,6 +182,23 @@ class ResearchAgent:
             max_tokens=1024,
             thinking={"type": "disabled"},
             messages=[{"role": "user", "content": prompt}],
+        )
+        return self._response_text(response)
+
+    def _refine(self, analysis: str, reflection: str) -> str:
+        """Revise an analysis by applying the agent's own reflection feedback."""
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=1024,
+            thinking={"type": "disabled"},
+            messages=[{
+                "role": "user",
+                "content": (
+                    "Revise the investment analysis using every applicable point in the "
+                    f"self-critique. Preserve factual details.\n\nAnalysis:\n{analysis}"
+                    f"\n\nSelf-critique:\n{reflection}\n\nReturn only the revised analysis."
+                ),
+            }],
         )
         return self._response_text(response)
 
