@@ -5,6 +5,14 @@ An autonomous multi-agent system that researches financial markets end-to-end �
 
 ---
 
+## Final Deliverable
+
+The executed Team 5 notebook is available as a self-contained HTML file:
+
+[View the final project submission](deliverables/AAI_520_Team_5_Final_Project.html)
+
+---
+
 ## System Architecture
 
 ```
@@ -75,7 +83,9 @@ Finalproject/
 │   ├── yfinance_tool.py
 │   ├── news_tool.py
 │   └── memory_tool.py
-├── notebooks/                 # Final deliverable
+├── notebooks/                 # Source notebook
+├── deliverables/
+│   └── AAI_520_Team_5_Final_Project.html
 ├── tests/
 ├── .env.example               # API key template
 └── requirements.txt
