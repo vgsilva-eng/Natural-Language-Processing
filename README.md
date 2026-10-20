@@ -5,6 +5,14 @@ An autonomous multi-agent system that researches financial markets end-to-end �
 
 ---
 
+## Final Deliverable
+
+The executed Team 5 notebook is available as a self-contained HTML file:
+
+[View the final project submission](deliverables/AAI_520_Team_5_Final_Project.html)
+
+---
+
 ## System Architecture
 
 ```
@@ -75,9 +83,9 @@ Finalproject/
 │   ├── yfinance_tool.py
 │   ├── news_tool.py
 │   └── memory_tool.py
-├── notebooks/
-│   ├── investment_research_agent.ipynb   # Final deliverable — run this
-│   └── archive/                          # Individual agent demos (reference only)
+├── notebooks/                 # Source notebook
+├── deliverables/
+│   └── AAI_520_Team_5_Final_Project.html
 ├── tests/
 ├── .env.example               # API key template
 └── requirements.txt
@@ -112,16 +120,6 @@ Finalproject/
 | `Prompt Chaining` | 5-step news pipeline: ingest → preprocess → classify → extract facts → summarize |
 | `Routing` | LLM classifier reads content and dispatches it to the correct specialist agent |
 | `Evaluator-Optimizer` | Scores a draft, gives feedback, rewrites it — loops until quality passes a threshold |
-
----
-
-## Final Deliverable
-
-The complete project is demonstrated in:
-
-**[`notebooks/investment_research_agent.ipynb`](notebooks/investment_research_agent.ipynb)**
-
-This notebook runs all four agents and all three workflow patterns end-to-end, with live data, visualizations, and annotated outputs. It is the primary submission artifact and should be reviewed as a self-contained document.
 
 ---
 
